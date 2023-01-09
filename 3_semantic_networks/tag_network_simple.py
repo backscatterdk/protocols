@@ -1,28 +1,11 @@
-import pickle
-import sys
+import argparse
 from collections import Counter
 import networkx as nx
 import numpy as np
 import pandas as pd
-
-
-def write_docstring():
-    """
-    This script creates a tag network from a pickled list of strings. The script
-    creates a co-occurance matrix in the way it counts the cooccuring words in each string. 
-    The corresponding network is saved as gexf file. Here each word is a node and cooccuring words are connected by an edge with weights.
-    """
-    return
-
 # sklearn countvectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 
-with open("stopord.txt", "r") as file:
-    stopwords = [line.rstrip() for line in file]
-
-# parse file as command line argument and unpickle it
-with open(sys.argv[1], "rb") as file:
-    corpus = pickle.load(file)
 
 def create_co_occurance_matrix(texts,min_count = 1):
     """
@@ -55,8 +38,24 @@ def create_tag_network(corpus, min_count = 1):
     G = create_graph(df_matrix)
     return G
 
+
+# parse path to csv file from command line argument and save it as df
+# and parse command line argument name of the column used for analysis with default name "tags"
+parser = argparse.ArgumentParser()
+parser.add_argument("path", help="path to csv file")
+parser.add_argument(
+    "--column",
+    help="name of the column used for analysis",
+    default="tags",
+    type=str,
+)
+args = parser.parse_args()
+
+# parse csv file as command line argument and load it as df 
+df = pd.read_csv(args.path)
+
 # create tag network
-G = create_tag_network(corpus, min_count = 1)
+G = create_tag_network(list(df[args.column]), min_count = 1)
 
 # save graph
 nx.write_gexf(G, "tag_network.gexf")
