@@ -54,6 +54,9 @@ args = parser.parse_args()
 # parse csv file as command line argument and load it as df 
 df = pd.read_csv(args.path)
 
+# remove rows with missing values from column 
+df = df.dropna(subset=[args.column])
+
 # create tag network
 G = create_tag_network(list(df[args.column]), min_count = 1)
 
