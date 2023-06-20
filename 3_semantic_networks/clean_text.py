@@ -72,22 +72,27 @@ def preprocessing(corpus):
 
 
 ######### EXECUTION #############
+def main():
 
-# parse path to csv file from command line argument and save it as df
-# and parse command line argument name of the column used for analysis with default name "tags"
-parser = argparse.ArgumentParser()
-parser.add_argument("path", help="path to csv file")
-parser.add_argument(
-    "--column", help="name of the column used for analysis", default="text", type=str,
-)
-args = parser.parse_args()
+    # parse path to csv file from command line argument and save it as df
+    # and parse command line argument name of the column used for analysis with default name "tags"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--path", help="path to csv file")
+    parser.add_argument(
+        "--column", help="name of the column used for analysis", default="text", type=str,
+    )
+    args = parser.parse_args()
 
-# read file from command line argument and save it as df
-df = pd.read_csv(args.path)
+    # read file from command line argument and save it as df
+    df = pd.read_csv(args.path)
 
-# run preprocessing for parsed column
-clean_text = preprocessing(df[args.column])
+    # run preprocessing for parsed column
+    clean_text = preprocessing(df[args.column])
 
-df["clean_text"] = clean_text
+    df["clean_text"] = clean_text
 
-df.to_csv("clean_text.csv", index=False)
+    df.to_csv("clean_text.csv", index=False)
+
+
+if __name__:
+    main()

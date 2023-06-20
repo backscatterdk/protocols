@@ -7,6 +7,17 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 
 
+def split_sents(df):
+    """
+    seperate the sentences in the tag collumn on punctuation
+    create seperate rows in the df for each sentence 
+    """
+    # seperate into seperate tag lists - on punctuation
+    df['tags'] = df['tags'].str.split(".")
+    # make into seperate rows
+    df = df.explode("tags")
+    return df
+
 def create_co_occurance_matrix(texts,min_count = 1):
     """
     creates co_occurance matrix based on list of strings. min_count specifies the required minimum 
@@ -39,29 +50,36 @@ def create_tag_network(corpus, min_count = 1):
     return G
 
 
-# parse path to csv file from command line argument and save it as df
-# and parse command line argument name of the column used for analysis with default name "tags"
-parser = argparse.ArgumentParser()
-parser.add_argument("path", help="path to csv file")
-parser.add_argument(
-    "--column",
-    help="name of the column used for analysis",
-    default="tags",
-    type=str,
-)
-args = parser.parse_args()
+def main():
+    # parse path to csv file from command line argument and save it as df
+    # and parse command line argument name of the column used for analysis with default name "tags"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--path", 
+                        help="path to csv file",
+                        type=str)
+    parser.add_argument(
+        "--column",
+        help="name of the column used for analysis",
+        default="tags",
+        type=str,
+        required=False
+    )
+    args = parser.parse_args()
 
-# parse csv file as command line argument and load it as df 
-df = pd.read_csv(args.path)
+    # parse csv file as command line argument and load it as df 
+    df = pd.read_csv(args.path)
 
-# remove rows with missing values from column 
-df = df.dropna(subset=[args.column])
+    # remove rows with missing values from column 
+    df = df.dropna(subset=[args.column])
 
-# create tag network
-G = create_tag_network(list(df[args.column]), min_count = 1)
+    # split "sentences" on "."
+    df = split_sents(df)
 
-# save graph
-nx.write_gexf(G, "tag_network.gexf")
+    # create tag network
+    G = create_tag_network(list(df[args.column]), min_count = 1)
 
+    # save graph
+    nx.write_gexf(G, "tag_network.gexf")
 
-
+if __name__:
+    main()
