@@ -1,0 +1,4 @@
+userid(int), username(str)
+userid(int), username(str)
+userid(int), username(str)
+...

@@ -7,15 +7,15 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 
 
-def split_sents(df):
+def split_sents(df, col_name):
     """
     seperate the sentences in the tag collumn on punctuation
     create seperate rows in the df for each sentence 
     """
     # seperate into seperate tag lists - on punctuation
-    df['tags'] = df['tags'].str.split(".")
+    df[col_name] = df[col_name].str.split(".")
     # make into seperate rows
-    df = df.explode("tags")
+    df = df.explode(col_name)
     return df
 
 def create_co_occurance_matrix(texts,min_count = 1):
